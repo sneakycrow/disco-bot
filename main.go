@@ -30,8 +30,8 @@ func getDiscordTokenFromEnv() string {
 	return envToken
 }
 
-func displayStatus(isDisplayed bool, prefix string) {
-	s.Prefix = prefix
+func displayStatus(isDisplayed bool) {
+	// start or stop depending on bool supplied
 	if isDisplayed {
 		s.Start()
 	} else {
@@ -44,7 +44,8 @@ var (
 )
 
 func init() {
-	displayStatus(true, "Loading ")
+	s.Prefix = "Loading "
+	displayStatus(true)
 	// first we load our .env file into the environment
 	err := godotenv.Load()
 
@@ -74,14 +75,15 @@ func main() {
 	}
 
 	// wait until ctrl-c other term signal is received
-	displayStatus(false, "Loading ")
+	displayStatus(false)
 	log.Printf("Bot is now running. Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
-	displayStatus(true, "Stopping ")
+	s.Prefix = "Stopping "
+	displayStatus(true)
 
 	// cleany close down discord session
 	discordBot.Close()
-	displayStatus(false, "Stopping ")
+	displayStatus(false)
 }
