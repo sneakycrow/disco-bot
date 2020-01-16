@@ -7,7 +7,7 @@ import (
 	"syscall" // for checking for system calls
 	"time" // for spinner animation time
 
-	handlers "github.com/sneakycrow/disco-bot/handlers"
+	handlers "github.com/sneakycrow/disco-bot/handlers" // local handler functions
 
 	"github.com/joho/godotenv" // loading env vars from .env file
 	"github.com/bwmarrin/discordgo" // golang discord api
@@ -39,11 +39,14 @@ func displayStatus(isDisplayed bool) {
 	}
 }
 
+// create a global spinner variable, so we can start and stop from fn init and fn main (also prefix changing from either)
 var (
 	s = spinner.New(spinner.CharSets[9], 100*time.Millisecond)
 )
 
+// init function for initalizing spinner and env vars
 func init() {
+	// set our prefix to loading for initialization
 	s.Prefix = "Loading "
 	displayStatus(true)
 	// first we load our .env file into the environment
@@ -70,20 +73,28 @@ func main() {
 	discordBot.AddHandler(handlers.BotReady)
 	// open a websocket connection to discord and begin listening
 	err = discordBot.Open()
+	// check for error
 	if err != nil {
 		log.Fatal("error opening connection\nerror: %s\n", err)
 	}
 
-	// wait until ctrl-c other term signal is received
+	// remove loading display
 	displayStatus(false)
+	// tell console our bot is running
 	log.Printf("Bot is now running. Press CTRL-C to exit.")
+	// establish sc channel for detecting os.Signal 1 code
 	sc := make(chan os.Signal, 1)
+	// have sc be notified on several syscalls and os 
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	// have sc fire off when it receives a signal, which will continue code execution
 	<-sc
+	// tell spinner prefix to be stopping
 	s.Prefix = "Stopping "
+	// display stopping status
 	displayStatus(true)
 
 	// cleany close down discord session
 	discordBot.Close()
+	// remove stopping status
 	displayStatus(false)
 }
