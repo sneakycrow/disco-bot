@@ -39,7 +39,7 @@ func displayStatus(isDisplayed bool) {
 	}
 }
 
-// create a global spinner variable, so we can start and stop from fn init and fn main (also prefix changing from either)
+// create a global spinner variable so we can start and stop from fn init and fn main (also prefix changing from either)
 var (
 	s = spinner.New(spinner.CharSets[9], 100*time.Millisecond)
 )
