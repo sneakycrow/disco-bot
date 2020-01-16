@@ -3,6 +3,7 @@ package handlers
 import (
 	"os"
 	"fmt"
+	"log"
 	
 	"github.com/bwmarrin/discordgo"
 )
@@ -18,6 +19,6 @@ func BotReady(session *discordgo.Session, websocketReady *discordgo.Ready) {
 		log.Printf("BOT_CHANNEL_ID is empty\n")
 	} else {
 		// let the discord know our bot is ready
-		session.ChannelMessageSend(botChannel, fmt.Sprintf("%s is ready to go", websocketReady.User))
+		session.ChannelMessageSend(botChannelID, fmt.Sprintf("%s is ready to go", websocketReady.User))
 	}
 }
