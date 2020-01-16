@@ -5,11 +5,13 @@ import (
 	"os" // for grabbing the env vars
 	"os/signal" // for checking for os signals
 	"syscall" // for checking for system calls
+	"time" // for spinner animation time
 
 	handlers "github.com/sneakycrow/disco-bot/handlers"
 
 	"github.com/joho/godotenv" // loading env vars from .env file
 	"github.com/bwmarrin/discordgo" // golang discord api
+	"github.com/briandowns/spinner" // spinner
 )
 
 func getDiscordTokenFromEnv() string {
@@ -28,8 +30,21 @@ func getDiscordTokenFromEnv() string {
 	return envToken
 }
 
+func displayStatus(isDisplayed bool, prefix string) {
+	s.Prefix = prefix
+	if isDisplayed {
+		s.Start()
+	} else {
+		s.Stop()
+	}
+}
+
+var (
+	s = spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+)
 
 func init() {
+	displayStatus(true, "Loading ")
 	// first we load our .env file into the environment
 	err := godotenv.Load()
 
@@ -59,11 +74,14 @@ func main() {
 	}
 
 	// wait until ctrl-c other term signal is received
+	displayStatus(false, "Loading ")
 	log.Printf("Bot is now running. Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
+	displayStatus(true, "Stopping ")
 
 	// cleany close down discord session
 	discordBot.Close()
+	displayStatus(false, "Stopping ")
 }
