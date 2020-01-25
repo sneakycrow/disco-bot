@@ -1,16 +1,13 @@
 package handlers
 
 import (
-	"os"
-	"fmt"
 	"log"
-	
+
 	"github.com/bwmarrin/discordgo"
 )
 
+// BotReady is a function that logs the bot ready signal
 func BotReady(session *discordgo.Session, websocketReady *discordgo.Ready) {
-	// Lookup our bot channel id from environment
-	botChannelID, isChannelIDExist := os.LookupEnv("BOT_CHANNEL_ID")
 	if !isChannelIDExist {
 		// if it isn't set, log it
 		log.Printf("BOT_CHANNEL_ID is not set\n")
@@ -19,6 +16,6 @@ func BotReady(session *discordgo.Session, websocketReady *discordgo.Ready) {
 		log.Printf("BOT_CHANNEL_ID is empty\n")
 	} else {
 		// let the discord know our bot is ready
-		session.ChannelMessageSend(botChannelID, fmt.Sprintf("%s is ready to go", websocketReady.User))
+		log.Printf("Bot has started successfully")
 	}
 }
